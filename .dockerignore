@@ -1,0 +1,148 @@
+# .dockerignore - Exclude files and directories from Docker build context
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+logs/
+outputs/
+models/
+build/
+dist/
+*.egg-info/
+.cache/
+.pytest_cache/
+.coverage
+.nyc_output
+
+# Data files (mount as volumes instead)
+data/
+*.parquet
+*.csv
+*.h5
+*.hdf5
+
+# Documentation build
+docs/_build/
+docs/site/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Development and testing
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Package management
+Pipfile
+Pipfile.lock
+poetry.lock
+requirements-dev.txt
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Large files (should be mounted as volumes)
+*.zip
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# Sensitive files
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# Local configuration overrides
+config.local.yaml
+config.dev.yaml
+local_config.py
+
+# Test artifacts
+htmlcov/
+.coverage.*
+test-reports/
+test-results/

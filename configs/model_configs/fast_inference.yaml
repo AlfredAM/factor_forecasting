@@ -1,0 +1,96 @@
+# Fast Inference Configuration for Factor Forecasting
+# This configuration is optimized for low-latency prediction in production
+
+model:
+  name: "fast_inference"
+  type: "transformer"
+  
+  # Architecture parameters (optimized for speed)
+  hidden_size: 128
+  num_layers: 4
+  num_heads: 4
+  dropout: 0.0  # Disabled for inference
+  activation: "gelu"
+  d_ff: 512
+  max_seq_len: 10
+  
+  # Input/output dimensions
+  num_factors: 100
+  num_targets: 3
+  embedding_dim: 128
+  
+  # Attention configuration
+  use_flash_attention: true
+  attention_dropout: 0.0
+  layer_norm_eps: 1e-6
+
+inference:
+  # Inference parameters
+  batch_size: 256
+  use_ensemble: false  # Disabled for speed
+  ensemble_size: 1
+  temperature: 1.0
+  
+  # Real-time inference configuration
+  real_time_mode: true
+  max_latency_ms: 25.0
+  cache_size: 5000
+  
+  # Performance optimization
+  use_mixed_precision: true
+  num_workers: 1
+  pin_memory: true
+  
+  # Emergency handling
+  fallback_model: "models/fallback_model.pth"
+  confidence_threshold: 0.7
+  max_prediction_std: 0.15
+
+data:
+  # Sequence configuration (shorter for speed)
+  sequence_length: 3
+  prediction_horizon: 1
+  min_sequence_length: 3
+  
+  # Target columns
+  target_columns: ["intra30m", "nextT1d", "ema1d"]
+  factor_columns: null
+  stock_id_column: "sid"
+  weight_column: "ADV50"
+
+api:
+  # API configuration
+  host: "0.0.0.0"
+  port: 8000
+  workers: 2
+  max_request_size: 5 * 1024 * 1024  # 5MB
+  
+  # Security
+  require_api_key: true
+  api_key_header: "X-API-Key"
+  rate_limit_per_minute: 2000
+
+caching:
+  # Caching configuration
+  enable_cache: true
+  cache_size: 10000
+  cache_ttl_seconds: 1800  # 30 minutes
+  redis_host: "localhost"
+  redis_port: 6379
+
+monitoring:
+  # Monitoring configuration
+  enable_metrics: true
+  metrics_port: 9090
+  health_check_interval: 15
+  enable_profiling: false
+
+hardware:
+  device: "cuda"  # Optimized for GPU
+  num_workers: 1
+  pin_memory: true
+  max_memory_gb: 4.0
+
+# Model loading
+model_path: "models/fast_inference_model.pth"
+model_format: "torchscript"  # Use TorchScript for faster loading 

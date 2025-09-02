@@ -1,0 +1,4 @@
+[console_scripts]
+factor-api = src.api.api_server:main
+factor-eval = src.evaluation.evaluate:main
+factor-train = src.training.train:main

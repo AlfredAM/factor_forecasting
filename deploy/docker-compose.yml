@@ -1,0 +1,159 @@
+version: '3.8'
+
+services:
+  # Factor Forecasting API Service
+  factor-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: factor-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - FACTOR_ENV=production
+      - FACTOR_LOG_LEVEL=INFO
+      - FACTOR_API_PORT=8000
+      - FACTOR_CONFIG=/app/config.yaml
+    volumes:
+      - ./data:/app/data:ro
+      - ./config.yaml:/app/config.yaml:ro
+      - factor_logs:/app/logs
+      - factor_outputs:/app/outputs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - factor_network
+    depends_on:
+      - redis
+    command: ["api"]
+
+  # Redis for caching and task queue
+  redis:
+    image: redis:7-alpine
+    container_name: factor-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - factor_network
+
+  # Background Training Worker (Optional)
+  factor-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: factor-worker
+    restart: unless-stopped
+    environment:
+      - FACTOR_ENV=production
+      - FACTOR_LOG_LEVEL=INFO
+      - FACTOR_CONFIG=/app/config.yaml
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./data:/app/data:ro
+      - ./config.yaml:/app/config.yaml:ro
+      - factor_logs:/app/logs
+      - factor_outputs:/app/outputs
+    networks:
+      - factor_network
+    depends_on:
+      - redis
+    command: ["worker"]
+    deploy:
+      replicas: 1
+
+  # Nginx Load Balancer (Production)
+  nginx:
+    image: nginx:alpine
+    container_name: factor-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/nginx/ssl:/etc/nginx/ssl:ro
+      - factor_logs:/var/log/nginx
+    networks:
+      - factor_network
+    depends_on:
+      - factor-api
+    profiles:
+      - production
+
+  # Monitoring with Prometheus (Optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: factor-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./deploy/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - factor_network
+    profiles:
+      - monitoring
+
+  # Grafana Dashboard (Optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: factor-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./deploy/monitoring/grafana:/etc/grafana/provisioning
+    networks:
+      - factor_network
+    depends_on:
+      - prometheus
+    profiles:
+      - monitoring
+
+# Volumes for persistent data
+volumes:
+  factor_logs:
+    driver: local
+  factor_outputs:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+# Network for service communication
+networks:
+  factor_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

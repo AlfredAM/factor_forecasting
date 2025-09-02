@@ -1,0 +1,108 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Python cache files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache
+.coverage
+htmlcov
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
+
+# Data files (exclude from image, mount at runtime)
+data/
+*.parquet
+*.csv
+*.h5
+*.hdf5
+
+# Model files (exclude from image, mount at runtime)
+models/
+*.pth
+*.pkl
+*.joblib
+
+# Output files
+outputs/
+logs/
+checkpoints/
+ic_analysis/
+temp/
+
+# Documentation
+README.md
+*.md
+docs/
+
+# Test files
+tests/
+test_*.py
+*_test.py
+
+# Development files
+setup.py
+setup.cfg
+pyproject.toml
+MANIFEST.in
+
+# Jupyter notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# Docker files (except Dockerfile)
+docker-compose*.yml
+.dockerignore
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+
+# Node.js files (if any)
+node_modules/
+package.json
+package-lock.json
+
+# Temporary files
+*.tmp
+*.temp
+.cache/ 

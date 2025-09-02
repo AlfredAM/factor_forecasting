@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-09-02T11:46:33.920922",
+  "monitoring_duration": "0:02:22.944512",
+  "training_status": "running",
+  "iteration_history": [
+    {
+      "time": "2025-09-02T11:44:13.966655",
+      "iteration": 880,
+      "loss": 0.274769
+    },
+    {
+      "time": "2025-09-02T11:44:49.141053",
+      "iteration": 880,
+      "loss": 0.274769
+    },
+    {
+      "time": "2025-09-02T11:45:24.825740",
+      "iteration": 880,
+      "loss": 0.274769
+    },
+    {
+      "time": "2025-09-02T11:46:00.576660",
+      "iteration": 880,
+      "loss": 0.274769
+    }
+  ],
+  "ic_reports": [],
+  "epoch_completed": false
+}

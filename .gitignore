@@ -1,0 +1,57 @@
+# 数据文件
+data/
+*/data/
+*.parquet
+*.csv
+*.h5
+*.hdf5
+
+# 虚拟环境
+venv/
+*/venv/
+env/
+*/env/
+
+# Python缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# 日志文件
+*.log
+logs/
+outputs/
+
+# 模型文件
+*.pkl
+*.joblib
+checkpoints/
+
+# 配置文件中的敏感信息
+*config*local*
+*secret*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.temp
+*~
+
+# 大文件
+*.zip
+*.tar.gz
+*.rar

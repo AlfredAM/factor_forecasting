@@ -1,0 +1,147 @@
+# Rolling Window Training Configuration
+# This configuration is optimized for rolling window training with efficient data loading
+
+# Training Mode Configuration
+training_mode: "rolling_window"
+
+# Data Configuration
+data_dir: "./data"
+start_date: "2018-01-01"
+end_date: "2022-12-31"
+
+# Rolling Window Configuration
+rolling_window_years: 2  # Number of years to train before predicting next year
+min_train_years: 1  # Minimum years required for training
+prediction_years: [2019, 2020, 2021, 2022]  # Years to predict
+
+# Column Configuration
+factor_columns: 
+  - "0"  # Factor 0
+  - "1"  # Factor 1
+  - "2"  # Factor 2
+  - "3"  # Factor 3
+  - "4"  # Factor 4
+  - "5"  # Factor 5
+  - "6"  # Factor 6
+  - "7"  # Factor 7
+  - "8"  # Factor 8
+  - "9"  # Factor 9
+  # Add more factors as needed (0-99)
+  - "99"  # Factor 99
+
+target_columns:
+  - "intra30m"  # 30-minute intraday return
+  - "nextT1d"   # Next trading day return
+  - "ema1d"     # Exponential moving average 1-day
+
+stock_id_column: "sid"
+limit_up_down_column: "luld"
+weight_column: "ADV50"
+
+# Sequence Configuration
+sequence_length: 5  # Historical window length
+prediction_horizon: 1  # Prediction steps
+min_sequence_length: 5  # Minimum sequence length
+
+# Model Architecture Configuration
+model_type: 'transformer'  # 'transformer', 'tcn', 'tcn_attention', 'lstm'
+hidden_size: 256
+num_layers: 6
+num_heads: 8
+dropout: 0.1
+activation: "gelu"
+
+# TCN-specific configuration
+kernel_size: 3
+tcn_channels: [256, 256, 256, 256, 256, 256]
+
+# LSTM-specific configuration
+lstm_hidden_size: 256
+lstm_num_layers: 2
+lstm_dropout: 0.1
+lstm_bidirectional: true
+
+# Training Configuration
+batch_size: 1024
+learning_rate: 1e-3
+weight_decay: 1e-5
+num_epochs: 50  # Reduced for rolling window training
+early_stopping_patience: 10
+validation_split: 0.2
+test_split: 0.1
+
+# Data split ratios
+train_ratio: 0.7
+val_ratio: 0.15
+test_ratio: 0.15
+
+# Optimizer Configuration
+optimizer_type: "adamw"
+scheduler_type: "cosine"
+warmup_steps: 1000
+
+# Loss Function Configuration
+loss_function_type: "correlation_loss"
+quantile_alpha: 0.5
+
+# Correlation optimization configuration
+correlation_weight: 1.0
+mse_weight: 0.1
+target_correlations: [0.1, 0.05, 0.08]  # Target correlations for each target
+
+# Regularization Configuration
+label_smoothing: 0.0
+gradient_clip: 1.0
+
+# Data Augmentation Configuration
+use_data_augmentation: true
+noise_std: 0.01
+mask_probability: 0.1
+
+# Model Saving Configuration
+model_save_dir: "./outputs/models"
+best_model_name: "best_model.pth"
+checkpoint_interval: 10
+
+# Logging Configuration
+log_dir: "./outputs/logs"
+use_wandb: false
+wandb_project: "factor_forecasting"
+wandb_run_name: null
+
+# Hardware Configuration
+device: "auto"  # "cpu", "cuda", "auto"
+num_workers: 4
+pin_memory: true
+
+# Server-specific Configuration
+server_mode: false
+conda_env: "factor_forecast"
+output_dir: "./outputs"
+
+# Performance Configuration
+use_mixed_precision: true
+gradient_accumulation_steps: 1
+max_grad_norm: 1.0
+
+# Validation Configuration
+validation_interval: 1
+save_best_only: true
+monitor_metric: "val_correlation"
+monitor_mode: "max"
+
+# Rolling Window Specific Configuration
+enable_data_caching: true
+cache_dir: "./outputs/cache"
+save_detailed_results: true
+results_dir: "./outputs/rolling_results"
+
+# Memory Management
+max_memory_usage_gb: 8.0
+enable_garbage_collection: true
+batch_loading: true
+
+# Error Handling
+continue_on_error: true
+max_retries: 3
+retry_delay_seconds: 5 

@@ -1,0 +1,110 @@
+# Ensemble Model Configuration for Factor Forecasting
+# This configuration combines multiple models for improved prediction accuracy
+
+ensemble:
+  name: "factor_forecasting_ensemble"
+  type: "weighted_average"
+  
+  # Ensemble configuration
+  models:
+    - name: "transformer_base"
+      weight: 0.4
+      model_path: "models/transformer_base/best_model.pth"
+      config_path: "configs/model_configs/transformer_base.yaml"
+    
+    - name: "transformer_large"
+      weight: 0.3
+      model_path: "models/transformer_large/best_model.pth"
+      config_path: "configs/model_configs/transformer_large.yaml"
+    
+    - name: "tcn_model"
+      weight: 0.2
+      model_path: "models/tcn_model/best_model.pth"
+      config_path: "configs/model_configs/tcn_model.yaml"
+    
+    - name: "lstm_model"
+      weight: 0.1
+      model_path: "models/lstm_model/best_model.pth"
+      config_path: "configs/model_configs/lstm_model.yaml"
+  
+  # Ensemble methods
+  methods:
+    - "weighted_average"
+    - "stacking"
+    - "bagging"
+  
+  # Ensemble parameters
+  use_uncertainty_quantification: true
+  temperature: 1.0
+  confidence_threshold: 0.8
+
+inference:
+  # Inference parameters
+  batch_size: 128
+  use_ensemble: true
+  ensemble_size: 4
+  temperature: 1.0
+  
+  # Real-time inference configuration
+  real_time_mode: false  # Ensembles are slower
+  max_latency_ms: 100.0
+  cache_size: 2000
+  
+  # Performance optimization
+  use_mixed_precision: true
+  num_workers: 2
+  pin_memory: true
+  
+  # Emergency handling
+  fallback_model: "models/fallback_model.pth"
+  confidence_threshold: 0.8
+  max_prediction_std: 0.1
+
+data:
+  # Sequence configuration
+  sequence_length: 5
+  prediction_horizon: 1
+  min_sequence_length: 5
+  
+  # Target columns
+  target_columns: ["intra30m", "nextT1d", "ema1d"]
+  factor_columns: null
+  stock_id_column: "sid"
+  weight_column: "ADV50"
+
+api:
+  # API configuration
+  host: "0.0.0.0"
+  port: 8001  # Different port for ensemble
+  workers: 2
+  max_request_size: 10 * 1024 * 1024  # 10MB
+  
+  # Security
+  require_api_key: true
+  api_key_header: "X-API-Key"
+  rate_limit_per_minute: 500  # Lower rate limit for ensemble
+
+caching:
+  # Caching configuration
+  enable_cache: true
+  cache_size: 5000
+  cache_ttl_seconds: 3600  # 1 hour
+  redis_host: "localhost"
+  redis_port: 6379
+
+monitoring:
+  # Monitoring configuration
+  enable_metrics: true
+  metrics_port: 9091  # Different port
+  health_check_interval: 30
+  enable_profiling: true
+
+hardware:
+  device: "cuda"
+  num_workers: 2
+  pin_memory: true
+  max_memory_gb: 8.0
+
+# Model loading
+ensemble_model_path: "models/ensemble/best_ensemble.pth"
+model_format: "pytorch" 

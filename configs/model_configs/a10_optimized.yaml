@@ -1,0 +1,146 @@
+# NVIDIA A10 Optimized Configuration
+# GPU: NVIDIA A10 (24GB VRAM)
+# CPU: Intel Xeon Platinum 8369B (8 cores)
+# RAM: 28GB
+
+# ============================================================================
+# Model Configuration
+# ============================================================================
+model:
+  type: "transformer"  # transformer, tcn, lstm
+  hidden_size: 512
+  num_layers: 6
+  num_heads: 8
+  dropout: 0.1
+  activation: "gelu"
+  
+  # TCN specific
+  tcn:
+    kernel_size: 3
+    dilation_base: 2
+    num_channels: [256, 256, 256, 256]
+    
+  # LSTM specific  
+  lstm:
+    hidden_size: 512
+    num_layers: 3
+    bidirectional: true
+    dropout: 0.1
+
+# ============================================================================
+# Training Configuration
+# ============================================================================
+training:
+  # Optimized batch sizes for A10 GPU
+  batch_size: 256  # Large batch size for A10
+  sequence_length: 20
+  num_epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  
+  # Optimizer
+  optimizer: "adamw"
+  scheduler: "cosine"
+  warmup_steps: 1000
+  
+  # Mixed precision for faster training
+  use_mixed_precision: true
+  gradient_accumulation_steps: 1
+  
+  # Early stopping
+  patience: 10
+  min_delta: 0.001
+  
+  # Validation
+  validation_split: 0.2
+  validation_interval: 1
+
+# ============================================================================
+# Data Configuration
+# ============================================================================
+data:
+  # Data paths
+  train_data_path: "data/processed/train_data.parquet"
+  val_data_path: "data/processed/val_data.parquet"
+  test_data_path: "data/processed/test_data.parquet"
+  
+  # Feature configuration
+  num_features: 50
+  target_column: "target"
+  
+  # Data loading
+  num_workers: 4  # Optimized for 8-core CPU
+  pin_memory: true
+  prefetch_factor: 2
+
+# ============================================================================
+# Loss Configuration
+# ============================================================================
+loss:
+  type: "mse"  # mse, huber, smooth_l1
+  huber_delta: 1.0
+  smooth_l1_beta: 0.1
+
+# ============================================================================
+# Output Configuration
+# ============================================================================
+output:
+  model_save_path: "outputs/models/"
+  log_dir: "outputs/logs/"
+  checkpoint_dir: "outputs/checkpoints/"
+  results_dir: "outputs/results/"
+  
+  # Save best model
+  save_best_only: true
+  monitor_metric: "val_loss"
+  monitor_mode: "min"
+
+# ============================================================================
+# Hardware Configuration
+# ============================================================================
+hardware:
+  device: "cuda"
+  num_gpus: 1
+  gpu_memory_fraction: 0.9  # Use 90% of 24GB VRAM
+  cpu_workers: 4
+  
+  # Memory optimization
+  gradient_checkpointing: false  # A10 has enough memory
+  use_amp: true  # Automatic mixed precision
+
+# ============================================================================
+# Logging Configuration
+# ============================================================================
+logging:
+  level: "INFO"
+  log_interval: 100
+  tensorboard: true
+  wandb: false
+  
+# ============================================================================
+# Evaluation Configuration
+# ============================================================================
+evaluation:
+  metrics: ["mse", "mae", "correlation", "ic"]
+  test_interval: 5
+  save_predictions: true
+  
+# ============================================================================
+# Advanced Configuration
+# ============================================================================
+advanced:
+  # Model specific optimizations
+  use_attention: true
+  use_positional_encoding: true
+  
+  # Training optimizations
+  use_gradient_clipping: true
+  max_grad_norm: 1.0
+  
+  # Data augmentation
+  use_augmentation: false
+  
+  # Regularization
+  use_dropout: true
+  use_batch_norm: false
+  use_layer_norm: true 

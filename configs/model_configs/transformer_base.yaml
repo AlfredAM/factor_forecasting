@@ -1,0 +1,116 @@
+# Base Transformer Model Configuration for Factor Forecasting
+# This configuration provides a balanced approach between accuracy and computational efficiency
+
+model:
+  name: "transformer_base"
+  type: "transformer"
+  
+  # Architecture parameters (balanced)
+  hidden_size: 256
+  num_layers: 6
+  num_heads: 8
+  dropout: 0.1
+  activation: "gelu"
+  d_ff: 1024
+  max_seq_len: 50
+  
+  # Input/output dimensions
+  num_factors: 100
+  num_targets: 3
+  embedding_dim: 256
+  
+  # Attention configuration
+  use_flash_attention: false  # Disabled for base model
+  attention_dropout: 0.1
+  layer_norm_eps: 1e-6
+
+training:
+  # Training parameters (balanced)
+  batch_size: 1024
+  learning_rate: 1e-3
+  weight_decay: 1e-5
+  num_epochs: 100
+  gradient_clip: 1.0
+  
+  # Learning rate scheduling
+  scheduler_type: "cosine"
+  warmup_steps: 1000
+  min_lr: 1e-6
+  
+  # Early stopping
+  early_stopping_patience: 10
+  early_stopping_min_delta: 0.001
+  restore_best_weights: true
+  
+  # Mixed precision
+  use_mixed_precision: true
+  gradient_accumulation_steps: 1
+
+data:
+  # Sequence configuration
+  sequence_length: 5
+  prediction_horizon: 1
+  min_sequence_length: 5
+  
+  # Target columns
+  target_columns: ["intra30m", "nextT1d", "ema1d"]
+  factor_columns: null  # Will use default 0-99
+  stock_id_column: "sid"
+  weight_column: "ADV50"
+  
+  # Data split ratios
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+
+loss:
+  # Loss function configuration
+  type: "correlation_loss"
+  correlation_weight: 1.0
+  mse_weight: 0.1
+  rank_correlation_weight: 0.1
+  
+  # Target correlations
+  target_correlations: [0.1, 0.05, 0.08]
+  
+  # Quantile regression
+  quantile_alpha: 0.5
+
+optimization:
+  # Optimizer configuration
+  optimizer_type: "adamw"
+  beta1: 0.9
+  beta2: 0.999
+  eps: 1e-8
+  
+  # Regularization
+  label_smoothing: 0.0
+  dropout: 0.1
+
+data_augmentation:
+  enabled: true
+  noise_std: 0.01
+  mask_probability: 0.1
+  random_rotation: false
+
+output:
+  model_save_dir: "models/transformer_base"
+  best_model_name: "best_model.pth"
+  checkpoint_interval: 10
+  
+  # Logging
+  log_dir: "logs/transformer_base"
+  use_wandb: false
+  wandb_project: "factor_forecasting"
+  wandb_run_name: "transformer_base"
+
+hardware:
+  device: "auto"
+  num_workers: 2
+  pin_memory: true
+
+# Training mode specific settings
+training_mode: "rolling_window"
+rolling_window_years: 1
+min_train_years: 1
+prediction_years: [2019, 2020, 2021, 2022] 

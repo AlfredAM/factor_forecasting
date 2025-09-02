@@ -1,0 +1,102 @@
+# serviceoptimizeconfigure - 2xNVIDIA A10 (24GB), 32CPU, 126GB RAM
+# service: 47.120.46.105
+
+# foundationconfigure
+batch_size: 512  # stepsOOM
+fixed_batch_size: 512  # fixedbatchsize
+use_adaptive_batch_size: false
+adaptive_batch_size: false
+
+# distributedtraining - A10
+use_distributed: true
+gpu_devices: [0, 1]
+world_size: 2
+mixed_precision: true
+gradient_accumulation_steps: 1
+
+# dataloadoptimize - 32CPU
+num_workers: 8  # thread32
+prefetch_factor: 4  # add
+pin_memory: true
+persistent_workers: true
+
+# memoryoptimize
+max_memory_usage: 0.85  # 15%memory
+memory_check_interval: 100
+
+# modelconfigure
+model_type: "advanced_tcn_attention"
+num_stocks: 100000  # supporttable
+
+# TCNarchitecture - reduceGPU memory
+tcn_config:
+  num_channels: [128, 256, 256, 512]  # reducechannel
+  kernel_size: 3
+  dropout: 0.2
+
+# attention mechanism - reduce
+attention_config:
+  d_model: 256  # reducemodeldimension
+  nhead: 8
+  num_layers: 3  # reducelayer
+  dropout: 0.1
+
+# trainingparameter
+learning_rate: 0.0005  # learning ratebatch
+weight_decay: 0.01
+scheduler_type: "cosine_with_warmup"
+warmup_steps: 1000
+max_epochs: 100
+
+# gradientoptimize
+gradient_clip_norm: 1.0
+optimizer: "adamw"
+
+# verificationsave
+validation_interval: 500
+save_interval: 2000
+early_stopping_patience: 10
+
+# logmonitor
+log_level: "INFO"
+log_interval: 50
+ic_report_interval: 7200  # 2hoursreportIC
+
+# dataconfigure
+sequence_length: 60
+prediction_horizons: [1, 5, 10]
+target_columns: ["intra30m", "nextT1d", "ema1d"]
+
+# featuresconfigure
+feature_columns:
+  - "technical_features"
+  - "fundamental_features" 
+  - "market_features"
+  - "sentiment_features"
+
+# pathconfigure
+data_dir: "/nas/feature_v2_10s"  # datapath
+data_path: "/nas/feature_v2_10s"  # compatible
+output_path: "/nas/factor_forecasting/outputs"
+checkpoint_path: "/nas/factor_forecasting/checkpoints"
+log_path: "/nas/factor_forecasting/logs"
+
+# dataconfigure
+streaming_config:
+  chunk_size: 50000  # memorysupport
+  buffer_size: 200000  # add
+  max_cache_size: 1000000
+
+# lossfunctionconfigure  
+loss_config:
+  type: "quantitative_correlation"
+  alpha: 0.7
+  beta: 0.3
+
+# yearsconfigure
+rolling_config:
+  train_years: 3
+  validation_months: 6  
+  test_months: 12
+  start_year: 2020
+  end_year: 2024

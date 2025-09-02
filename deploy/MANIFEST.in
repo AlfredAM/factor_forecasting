@@ -1,0 +1,52 @@
+# MANIFEST.in - Package distribution manifest
+
+# Include documentation
+include README.md
+include LICENSE
+include CHANGELOG.md
+
+# Include configuration files
+recursive-include configs *.yaml *.yml *.json
+recursive-include src *.yaml *.yml *.json *.pt *.pth
+
+# Include requirements
+include requirements.txt
+include requirements-dev.txt
+
+# Include scripts
+recursive-include scripts *.py *.sh
+
+# Include deployment files
+recursive-include deploy *.yaml *.yml *.dockerfile *.conf
+
+# Include test data (small samples only)
+recursive-include tests/data *.parquet *.csv
+
+# Exclude development and build artifacts
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude __pycache__
+global-exclude .git*
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude *.egg-info
+
+# Exclude large data files and outputs
+exclude data/*
+exclude outputs/*
+exclude logs/*
+exclude models/*
+exclude venv/*
+exclude .venv/*
+
+# Exclude IDE and editor files
+global-exclude .vscode
+global-exclude .idea
+global-exclude *.swp
+global-exclude *.swo
+global-exclude *~
+
+# Exclude build artifacts
+global-exclude build/*
+global-exclude dist/*

@@ -1,0 +1,13 @@
+# 基本训练配置
+batch_size: 512
+fixed_batch_size: 512
+epochs: 3
+learning_rate: 0.001
+use_distributed: true
+enable_ic_reporting: true
+ic_report_interval: 1800
+validation_interval: 100
+target_columns: ["intra30m", "nextT1d", "ema1d"]
+data_dir: "/nas/feature_v2_10s"
+num_workers: 4
+pin_memory: true

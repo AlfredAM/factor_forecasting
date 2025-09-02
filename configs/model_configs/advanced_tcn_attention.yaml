@@ -1,0 +1,129 @@
+# Advanced TCN+Attention Model Configuration
+# Enhanced with improved attention mechanisms and regularization techniques
+
+model:
+  type: "AdvancedFactorForecastingTCNAttention"
+  input_dim: 100
+  hidden_dim: 256
+  num_layers: 6
+  num_heads: 8
+  dropout: 0.1
+  num_stocks: 1000
+  sequence_length: 15
+  target_columns: ["nextT1d"]
+  kernel_size: 3
+  
+  # Advanced attention mechanisms
+  use_relative_pos: true
+  use_multi_scale: true
+  use_adaptive: true
+  use_stochastic_depth: true
+  use_gated_units: true
+  
+  # Regularization
+  l2_weight: 1e-5
+
+training:
+  batch_size: 64
+  epochs: 100
+  learning_rate: 1e-3
+  weight_decay: 1e-4
+  
+  # Optimizer
+  optimizer: "AdamW"
+  
+  # Learning rate scheduler
+  scheduler: "CosineAnnealingWarmRestarts"
+  scheduler_params:
+    T_0: 10
+    T_mult: 2
+  
+  # Gradient clipping
+  gradient_clip_norm: 1.0
+  
+  # Early stopping
+  early_stopping_patience: 20
+  early_stopping_threshold: 1.1
+
+data:
+  max_files: 50
+  max_rows_per_file: 150000
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  
+  # Data augmentation
+  use_data_augmentation: false
+  
+  # Feature scaling
+  normalize_features: true
+  normalize_targets: true
+
+loss:
+  # Loss function weights
+  mse_weight: 0.5
+  mae_weight: 0.3
+  huber_weight: 0.2
+  
+  # Huber loss parameters
+  huber_beta: 1.0
+
+hardware:
+  device: "cuda"
+  num_workers: 4
+  pin_memory: true
+  
+  # Mixed precision training
+  use_amp: false
+  
+  # Distributed training
+  use_distributed: false
+
+output:
+  save_dir: "outputs/advanced_tcn_attention"
+  save_best_model: true
+  save_checkpoints: true
+  checkpoint_frequency: 10
+  
+  # Logging
+  log_level: "INFO"
+  use_tensorboard: true
+  use_wandb: false
+
+monitoring:
+  # Metrics to track
+  metrics: ["mse", "mae", "rmse", "correlation", "ic"]
+  
+  # Validation frequency
+  validate_every: 1
+  
+  # Model checkpointing
+  save_best_only: true
+  
+  # Performance monitoring
+  monitor_gpu_usage: true
+  monitor_memory_usage: true
+
+# Advanced features configuration
+advanced_features:
+  # Multi-scale attention scales
+  multi_scale_scales: [1, 2, 4]
+  
+  # Relative positional encoding
+  max_relative_position: 32
+  
+  # Stochastic depth
+  stochastic_depth_p: 0.1
+  
+  # Gated units
+  gated_unit_dropout: 0.1
+  
+  # Feature fusion
+  use_feature_fusion: true
+  fusion_method: "concatenate"
+  
+  # Attention mechanisms
+  attention_types: ["multi_scale", "adaptive", "relative_pos"]
+  
+  # Regularization techniques
+  regularization_methods: ["dropout", "l2", "stochastic_depth", "gradient_clipping"] 

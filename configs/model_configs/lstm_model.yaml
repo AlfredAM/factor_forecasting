@@ -1,0 +1,115 @@
+# LSTM Model Configuration for Factor Forecasting
+# Alternative architecture for comparison with transformer models
+
+model:
+  name: "lstm_model"
+  type: "lstm"
+  
+  # Architecture parameters
+  hidden_size: 256
+  num_layers: 4
+  dropout: 0.2
+  bidirectional: true
+  batch_first: true
+  
+  # Input/output dimensions
+  num_factors: 100
+  num_targets: 3
+  embedding_dim: 128
+  
+  # LSTM specific parameters
+  lstm_dropout: 0.1
+  use_attention: true
+  attention_heads: 4
+
+training:
+  # Training parameters
+  batch_size: 128  # LSTM can handle larger batches
+  learning_rate: 2e-4
+  weight_decay: 1e-5
+  num_epochs: 80
+  gradient_clip: 1.0
+  
+  # Learning rate scheduling
+  scheduler_type: "step"
+  step_size: 20
+  gamma: 0.8
+  warmup_steps: 500
+  
+  # Early stopping
+  early_stopping_patience: 12
+  early_stopping_min_delta: 0.001
+  restore_best_weights: true
+  
+  # Mixed precision
+  use_mixed_precision: true
+  gradient_accumulation_steps: 1
+
+data:
+  # Sequence configuration
+  sequence_length: 30
+  prediction_horizon: 1
+  min_sequence_length: 15
+  
+  # Target columns
+  target_columns: ["intra30m", "nextT1d", "ema1d"]
+  factor_columns: null
+  stock_id_column: "sid"
+  weight_column: "ADV50"
+  
+  # Data split ratios
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+
+loss:
+  # Loss function configuration
+  type: "correlation_loss"
+  correlation_weight: 0.8
+  mse_weight: 0.2
+  rank_correlation_weight: 0.1
+  
+  # Target correlations
+  target_correlations: [0.1, 0.05, 0.08]
+  
+  # Quantile regression
+  quantile_alpha: 0.5
+
+optimization:
+  # Optimizer configuration
+  optimizer_type: "adam"
+  beta1: 0.9
+  beta2: 0.999
+  eps: 1e-8
+  
+  # Regularization
+  label_smoothing: 0.0
+  dropout: 0.2
+
+data_augmentation:
+  enabled: true
+  noise_std: 0.02
+  mask_probability: 0.05
+  random_rotation: false
+
+output:
+  model_save_dir: "models/lstm_model"
+  best_model_name: "best_model.pth"
+  checkpoint_interval: 10
+  
+  # Logging
+  log_dir: "logs/lstm_model"
+  use_wandb: true
+  wandb_project: "factor_forecasting"
+  wandb_run_name: "lstm_model"
+
+hardware:
+  device: "auto"
+  num_workers: 4
+  pin_memory: true
+
+# Training mode specific settings
+training_mode: "rolling_window"
+rolling_window_years: 1
+min_train_years: 1
+prediction_years: [2019, 2020, 2021, 2022] 
