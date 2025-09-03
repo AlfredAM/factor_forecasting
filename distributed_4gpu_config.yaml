@@ -1,0 +1,52 @@
+# 4GPU分布式训练配置 - 最大化硬件利用率
+model_type: AdvancedFactorForecastingTCNAttention
+input_dim: 100
+hidden_dim: 1024   # 增大模型以利用4GPU算力
+num_layers: 16     # 更深的网络
+num_heads: 16      # 更多注意力头
+tcn_kernel_size: 7
+tcn_dilation_factor: 2
+dropout_rate: 0.1
+attention_dropout: 0.05
+target_columns: [intra30m, nextT1d, ema1d]
+sequence_length: 60
+epochs: 200
+batch_size: 8192   # 4GPU总批次大小 (每GPU 2048)
+fixed_batch_size: 8192
+learning_rate: 0.0004  # 分布式训练需要更高学习率
+weight_decay: 0.01
+gradient_clip_norm: 1.0
+use_mixed_precision: true
+accumulation_steps: 1
+use_adaptive_batch_size: false
+num_workers: 0     # 避免多进程问题
+pin_memory: false
+use_distributed: true   # 启用分布式训练
+auto_resume: true
+log_level: INFO
+ic_report_interval: 7200
+enable_ic_reporting: true
+checkpoint_frequency: 5
+save_all_checkpoints: false
+output_dir: /nas/factor_forecasting/outputs
+data_dir: /nas/feature_v2_10s
+train_start_date: 2018-01-02
+train_end_date: 2018-10-31   # 前10个月数据
+val_start_date: 2018-11-01
+val_end_date: 2018-11-30
+test_start_date: 2018-12-01
+test_end_date: 2018-12-31
+enforce_next_year_prediction: false
+enable_yearly_rolling: false
+min_train_years: 1
+rolling_window_years: 1
+shuffle_buffer_size: 1024
+
+# 分布式训练专用参数
+world_size: 4
+backend: nccl
+init_method: env://
+
+# 内存优化
+enable_gradient_checkpointing: true
+max_memory_per_gpu: 20  # 每GPU最大内存限制(GB)

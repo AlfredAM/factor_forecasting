@@ -1,0 +1,54 @@
+# 平衡高性能配置 - 最大化硬件利用率同时避免内存问题
+model_type: AdvancedFactorForecastingTCNAttention
+input_dim: 100
+hidden_dim: 768    # 适中的隐藏层维度
+num_layers: 10     # 适中的层数
+num_heads: 12      # 适中的注意力头数
+tcn_kernel_size: 5
+tcn_dilation_factor: 2
+dropout_rate: 0.1
+attention_dropout: 0.05
+target_columns: [intra30m, nextT1d, ema1d]  # 保持所有目标
+sequence_length: 40        # 适中的序列长度
+epochs: 200
+batch_size: 1024          # 平衡的批次大小
+fixed_batch_size: 1024
+learning_rate: 0.0001
+weight_decay: 0.01
+gradient_clip_norm: 1.0
+use_mixed_precision: true  # 启用混合精度节省内存
+accumulation_steps: 2      # 梯度累积
+use_adaptive_batch_size: false
+num_workers: 0            # 避免多进程问题
+pin_memory: false         # 避免额外内存占用
+use_distributed: false
+auto_resume: true
+log_level: INFO
+ic_report_interval: 7200  # 2小时报告
+enable_ic_reporting: true
+checkpoint_frequency: 5
+save_all_checkpoints: false
+output_dir: /nas/factor_forecasting/outputs
+data_dir: /nas/feature_v2_10s
+train_start_date: 2018-01-02
+train_end_date: 2018-10-31   # 使用前10个月数据
+val_start_date: 2018-11-01
+val_end_date: 2018-11-30
+test_start_date: 2018-12-01
+test_end_date: 2018-12-31
+enforce_next_year_prediction: false
+enable_yearly_rolling: false
+min_train_years: 1
+rolling_window_years: 1
+shuffle_buffer_size: 512
+
+# 内存优化参数
+max_memory_usage: 18      # 限制GPU内存使用
+streaming_chunk_size: 50000
+enable_memory_mapping: true
+enable_gradient_checkpointing: true  # 启用梯度检查点节省内存
+
+# 性能优化
+torch_compile: false      # 避免编译开销
+enable_flash_attention: false
+use_channels_last: true   # 内存布局优化

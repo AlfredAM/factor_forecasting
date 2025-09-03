@@ -320,7 +320,7 @@ class YearlyRollingTrainer:
                     
                     # predict
                     for col_idx, col in enumerate(self.config['target_columns']):
-                        if col in predictions:
+                        if (isinstance(predictions, dict) and col in predictions):
                             test_predictions.append({
                                 'target': col,
                                 'predictions': predictions[col].cpu().numpy(),

@@ -13,7 +13,7 @@ def run_ssh_command(cmd):
     ssh_cmd = [
         'sshpass', '-p', 'Abab1234',
         'ssh', '-o', 'StrictHostKeyChecking=no',
-        '-o', 'UserKnownHostsFile=/dev/null',
+        '-o', 'UserKnownHostsFile=/dev/null', 
         '-o', 'PreferredAuthentications=password',
         '-o', 'PubkeyAuthentication=no',
         'ecs-user@47.120.46.105',

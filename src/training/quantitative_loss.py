@@ -74,7 +74,7 @@ class QuantitativeCorrelationLoss(nn.Module):
         total_loss = 0.0
         
         for i, target_name in enumerate(target_names):
-            if target_name in predictions and target_name in targets:
+            if target_name in predictions and (isinstance(targets, dict) and (isinstance(targets, dict) and target_name in targets)):
                 pred = predictions[target_name]
                 target = targets[target_name]
                 
@@ -130,14 +130,16 @@ class QuantitativeCorrelationLoss(nn.Module):
                     rank_losses[target_name] = torch.tensor(0.0)
                     risk_penalties[target_name] = torch.tensor(0.0)
         
-        # Return detailed loss breakdown for monitoring
-        return {
+        # Return scalar loss for backpropagation
+        # Store detailed breakdown as attributes for monitoring
+        self.last_loss_breakdown = {
             'total_loss': total_loss,
             'mse_losses': mse_losses,
             'correlation_losses': correlation_losses,
             'rank_losses': rank_losses,
             'risk_penalties': risk_penalties
         }
+        return total_loss
     
     def _compute_robust_mse(self, pred: torch.Tensor, target: torch.Tensor, 
                            weights: torch.Tensor) -> torch.Tensor:

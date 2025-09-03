@@ -1,0 +1,63 @@
+# 针对4张A10 GPU + 739GB RAM + 128核CPU的优化配置
+model_type: AdvancedFactorForecastingTCNAttention
+input_dim: 100
+hidden_dim: 1024  # 增大隐藏层维度，充分利用GPU显存
+num_layers: 16    # 增加层数，提高模型复杂度
+num_heads: 32     # 增加注意力头数
+tcn_kernel_size: 7
+tcn_dilation_factor: 2
+dropout_rate: 0.1
+attention_dropout: 0.05
+target_columns: [intra30m, nextT1d, ema1d]
+sequence_length: 60
+epochs: 200       # 增加训练轮数
+batch_size: 2048  # 减小批次大小以适应GPU显存
+fixed_batch_size: 2048
+learning_rate: 0.0001  # 降低学习率，配合大批次
+weight_decay: 0.01
+gradient_clip_norm: 1.0
+use_mixed_precision: true
+accumulation_steps: 1
+use_adaptive_batch_size: false
+adaptive_batch_size: false
+num_workers: 0    # 禁用多进程数据加载以避免CUDA冲突
+pin_memory: true
+prefetch_factor: 4  # 增加预取因子
+use_distributed: false  # 暂时禁用分布式训练，使用单GPU
+auto_resume: true
+log_level: INFO
+ic_report_interval: 7200  # 2小时报告一次相关性
+enable_ic_reporting: true
+checkpoint_frequency: 5   # 更频繁的检查点保存
+save_all_checkpoints: false
+output_dir: /nas/factor_forecasting/outputs
+data_dir: /nas/feature_v2_10s
+train_start_date: 2018-01-02
+train_end_date: 2018-10-31
+val_start_date: 2018-11-01
+val_end_date: 2018-12-31
+test_start_date: 2019-01-01
+test_end_date: 2019-12-31
+enforce_next_year_prediction: true
+enable_yearly_rolling: true   # 启用年度滚动训练
+min_train_years: 1
+rolling_window_years: 1
+shuffle_buffer_size: 2048  # 增加缓冲区大小
+# GPU优化参数
+gpu_memory_fraction: 0.9
+enable_gpu_growth: true
+# 分布式训练参数
+world_size: 4
+backend: nccl
+# 数据处理优化
+streaming_chunk_size: 100000
+max_memory_usage: 600  # GB，留出一些内存给系统
+enable_memory_mapping: true
+# 监控参数
+enable_tensorboard: true
+tensorboard_log_dir: /nas/factor_forecasting/logs/tensorboard
+enable_wandb: false
+# 性能优化
+torch_compile: true
+enable_flash_attention: false  # A10可能不完全支持
+use_channels_last: true

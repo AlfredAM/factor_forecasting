@@ -1,0 +1,52 @@
+# 鲁棒训练配置 - 解决内存和进程问题
+batch_size: 1024
+fixed_batch_size: 1024
+use_adaptive_batch_size: false
+
+# 分布式配置
+use_distributed: true
+gpu_devices: [0, 1]
+world_size: 2
+
+# 内存管理优化
+num_workers: 4
+prefetch_factor: 2
+pin_memory: true
+persistent_workers: false  # 避免worker进程累积
+
+# 训练参数
+epochs: 3
+learning_rate: 0.001
+validation_interval: 100
+save_interval: 200
+early_stopping_patience: 5
+
+# IC报告优化
+enable_ic_reporting: true
+ic_report_interval: 1800  # 30分钟间隔，更频繁
+
+# 内存监控
+max_memory_usage: 0.8
+memory_check_interval: 50
+
+# 错误恢复
+auto_resume: true
+checkpoint_frequency: 5  # 更频繁的检查点
+
+# 目标配置
+target_columns: ["intra30m", "nextT1d", "ema1d"]
+model_type: "advanced_tcn_attention"
+num_stocks: 100000
+sequence_length: 60
+
+# 数据配置
+data_dir: "/nas/feature_v2_10s"
+output_dir: "/nas/factor_forecasting/outputs"
+checkpoint_path: "/nas/factor_forecasting/checkpoints"
+log_path: "/nas/factor_forecasting/logs"
+
+# 损失函数
+loss_config:
+  type: "quantitative_correlation"
+  alpha: 0.7
+  beta: 0.3

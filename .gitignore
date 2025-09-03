@@ -1,57 +1,85 @@
-# 数据文件
-data/
-*/data/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyTorch
+*.pth
+*.pt
+checkpoints/
+outputs/
+logs/
+*.log
+
+# Data files
 *.parquet
 *.csv
 *.h5
 *.hdf5
+data/
+datasets/
 
-# 虚拟环境
+# Virtual environments
 venv/
-*/venv/
 env/
-*/env/
+ENV/
+env.bak/
+venv.bak/
 
-# Python缓存
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# 日志文件
-*.log
-logs/
-outputs/
-
-# 模型文件
-*.pkl
-*.joblib
-checkpoints/
-
-# 配置文件中的敏感信息
-*config*local*
-*secret*
-
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# 系统文件
-.DS_Store
-Thumbs.db
-
-# 临时文件
-*.tmp
-*.temp
 *~
 
-# 大文件
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Model files
+*.pkl
+*.joblib
+
+# Large files
 *.zip
 *.tar.gz
 *.rar
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# SSH keys and credentials
+*.pem
+*.key
+id_rsa*

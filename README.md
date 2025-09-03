@@ -1,343 +1,77 @@
-# Factor Forecasting System
+# Factor Forecasting Project
 
-A comprehensive machine learning system for factor-based financial forecasting with advanced deep learning architectures and distributed training capabilities.
+## 项目概述
+先进的因子预测系统，使用深度学习技术进行金融因子预测。
 
-## Project Overview
+## 核心特性
+- 🚀 **4GPU分布式训练**: 充分利用多GPU资源
+- 🧠 **TCN + Attention架构**: 先进的时序建模
+- 📊 **实时监控**: 训练进度和相关性监控
+- 🔧 **自适应内存管理**: 智能内存优化
+- 📈 **滚动训练**: 支持时间序列滚动预测
 
-This project implements a complete end-to-end system for time series factor forecasting in financial markets. It features cutting-edge deep learning models, distributed training optimization, and robust data processing pipelines designed to handle large-scale financial data.
+## 模型架构
+- **AdvancedFactorForecastingTCNAttentionModel**: 结合TCN和注意力机制
+- **多目标预测**: intra30m, nextT1d, ema1d
+- **量化损失函数**: 专门的金融预测损失
 
-## Key Features
+## 硬件要求
+- **GPU**: 4x NVIDIA A10 (22GB显存)
+- **内存**: 739GB RAM
+- **CPU**: 128核心
+- **存储**: 高速SSD存储
 
-### Core Architecture
-- **TCN + Attention Models**: Temporal Convolutional Networks combined with multi-head attention mechanisms
-- **Distributed Training**: Multi-GPU support with PyTorch DDP for scalable training
-- **Streaming Data Processing**: Memory-efficient data loading for large datasets
-- **Mixed Precision Training**: Automatic mixed precision for faster training and reduced memory usage
+## 安装和使用
 
-### Data Management
-- **Strict Temporal Validation**: Prevents data leakage in time series prediction
-- **Rolling Window Training**: Annual rolling validation with proper temporal splits
-- **Adaptive Memory Management**: Dynamic memory optimization based on system resources
-- **Multiple Data Formats**: Support for Parquet, CSV, and HDF5 formats
-
-### Model Components
-- **Advanced TCN Architecture**: Multi-layer temporal convolution with residual connections
-- **Multi-Head Attention**: Self-attention mechanism for capturing long-range dependencies
-- **Stock Embeddings**: Learnable embeddings for individual stock characteristics
-- **Quantitative Loss Functions**: Specialized loss functions for financial correlation optimization
-
-### Training Features
-- **Checkpoint Management**: Automatic model checkpointing and resuming
-- **Early Stopping**: Intelligent early stopping based on validation metrics
-- **Learning Rate Scheduling**: Adaptive learning rate with warmup and decay
-- **Gradient Clipping**: Stable training with gradient norm clipping
-
-### Monitoring & Evaluation
-- **IC Correlation Reporting**: Regular Information Coefficient analysis
-- **Real-time Metrics**: Live training metrics and GPU utilization monitoring
-- **Performance Benchmarking**: Comprehensive model performance evaluation
-- **Risk Management**: Integrated risk assessment and portfolio analysis
-
-## Installation
-
-### Prerequisites
-- Python 3.8+
-- CUDA 11.0+ (for GPU support)
-- 16GB+ RAM recommended
-- 50GB+ storage space
-
-### Setup Instructions
-
-1. Clone the repository:
+### 环境配置
 ```bash
-git clone https://github.com/your-repo/factor_forecasting.git
-cd factor_forecasting
-```
-
-2. Create and activate virtual environment:
-```bash
+# 创建虚拟环境
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# or
-venv\Scripts\activate     # Windows
+source venv/bin/activate
+
+# 安装依赖
+pip install -r requirements.txt
 ```
 
-3. Install dependencies:
+### 训练启动
 ```bash
-pip install -r configs/requirements.txt
+# 4GPU分布式训练
+torchrun --standalone --nproc_per_node=4 \
+    unified_complete_training_v2_fixed.py \
+    --config optimal_4gpu_config.yaml
 ```
 
-4. Install the package:
+### 监控系统
 ```bash
-pip install -e .
+# 启动持续监控
+python continuous_training_monitor.py
 ```
 
-## Quick Start
+## 配置文件
+- `optimal_4gpu_config.yaml`: 4GPU高性能配置
+- `server_optimized_config.yaml`: 服务器优化配置
 
-### Basic Training
-```bash
-python src/unified_complete_training_v2.py --config configs/server_optimized_config.yaml
-```
+## 核心模块
+- `src/models/`: 模型定义
+- `src/data_processing/`: 数据处理和加载
+- `src/training/`: 训练逻辑
+- `src/monitoring/`: 监控和报告
 
-### Distributed Training
-```bash
-torchrun --nproc_per_node=2 src/unified_complete_training_v2.py --config configs/server_optimized_config.yaml
-```
+## 性能指标
+- **GPU利用率**: >90% (4GPU并行)
+- **训练速度**: ~6s/iteration
+- **内存效率**: 自适应批次大小
+- **相关性报告**: 每2小时自动生成
 
-### Configuration
-Edit configuration files in `configs/` directory:
-- `server_optimized_config.yaml`: Main training configuration
-- `model_configs/`: Model-specific configurations
+## 技术栈
+- **PyTorch**: 深度学习框架
+- **CUDA**: GPU计算
+- **Distributed Training**: 多GPU并行
+- **Mixed Precision**: 混合精度训练
+- **NCCL**: GPU通信后端
 
-## Project Structure
+## 作者
+AlfredAM - https://github.com/AlfredAM
 
-```
-factor_forecasting/
-├── configs/                 # Configuration files
-│   ├── model_configs/      # Model-specific configs
-│   └── requirements.txt    # Dependencies
-├── src/                    # Source code
-│   ├── api/               # API interfaces
-│   ├── data_processing/   # Data loading and processing
-│   ├── inference/         # Model inference
-│   ├── models/            # Model architectures
-│   ├── monitoring/        # Training monitoring
-│   ├── training/          # Training modules
-│   └── utils/             # Utility functions
-├── data/                  # Data directory
-│   ├── raw/              # Raw data files
-│   ├── processed/        # Processed data
-│   └── features/         # Feature data
-├── outputs/              # Training outputs
-│   ├── logs/            # Training logs
-│   ├── models/          # Saved models
-│   ├── checkpoints/     # Model checkpoints
-│   └── predictions/     # Prediction results
-├── tests/               # Test suite
-├── scripts/             # Utility scripts
-└── deploy/             # Deployment files
-```
-
-## Usage Examples
-
-### Data Preparation
-```python
-from src.data_processing.optimized_streaming_loader import OptimizedStreamingDataLoader
-
-# Create data loader
-loader = OptimizedStreamingDataLoader(
-    data_dir="data/raw",
-    memory_manager=memory_manager,
-    max_workers=4
-)
-```
-
-### Model Training
-```python
-from src.unified_complete_training_v2 import UnifiedCompleteTrainer
-
-# Initialize trainer
-trainer = UnifiedCompleteTrainer(config, rank=0, world_size=1)
-
-# Setup and start training
-trainer.setup_data_loaders()
-trainer.create_model()
-trainer.train()
-```
-
-### Model Inference
-```python
-from src.inference.inference import FactorPredictor
-
-# Load trained model
-predictor = FactorPredictor.load_from_checkpoint("outputs/models/best_model.pth")
-
-# Make predictions
-predictions = predictor.predict(features)
-```
-
-## Configuration
-
-### Key Configuration Parameters
-
-#### Training Settings
-- `batch_size`: Training batch size (default: 256)
-- `learning_rate`: Initial learning rate (default: 0.001)
-- `max_epochs`: Maximum training epochs (default: 100)
-- `early_stopping_patience`: Early stopping patience (default: 10)
-
-#### Model Architecture
-- `model_type`: Model architecture type ("advanced_tcn_attention")
-- `hidden_dim`: Hidden dimension size (default: 512)
-- `num_layers`: Number of model layers (default: 8)
-- `num_heads`: Number of attention heads (default: 8)
-
-#### Data Processing
-- `sequence_length`: Input sequence length (default: 60)
-- `num_workers`: Data loading workers (default: 4)
-- `prefetch_factor`: Data prefetch factor (default: 2)
-
-#### Distributed Training
-- `use_distributed`: Enable distributed training (default: false)
-- `world_size`: Number of processes (auto-detected)
-- `find_unused_parameters`: DDP unused parameters (default: false)
-
-## Performance Optimization
-
-### Memory Optimization
-- Use streaming data loaders for large datasets
-- Enable mixed precision training
-- Adjust batch size based on GPU memory
-- Configure memory manager thresholds
-
-### Training Speed
-- Enable distributed training for multiple GPUs
-- Use appropriate number of data loading workers
-- Optimize data preprocessing pipelines
-- Enable gradient accumulation for large effective batch sizes
-
-### Model Quality
-- Use proper data splits to prevent leakage
-- Implement regularization techniques
-- Monitor training metrics continuously
-- Use early stopping to prevent overfitting
-
-## Testing
-
-Run the complete test suite:
-```bash
-python -m pytest tests/ -v
-```
-
-Run specific test categories:
-```bash
-# Data processing tests
-python -m pytest tests/test_data_processing.py -v
-
-# Model tests
-python -m pytest tests/test_models.py -v
-
-# Training tests
-python -m pytest tests/test_training.py -v
-```
-
-## Monitoring
-
-### Training Monitoring
-- Real-time GPU utilization tracking
-- Training loss and validation metrics
-- Learning rate scheduling visualization
-- Memory usage monitoring
-
-### Model Performance
-- Information Coefficient (IC) analysis
-- Correlation metrics
-- Risk-adjusted returns
-- Sharpe ratio calculation
-
-## Deployment
-
-### Docker Deployment
-```bash
-# Build container
-docker build -t factor-forecasting .
-
-# Run container
-docker run --gpus all -v $(pwd)/data:/app/data factor-forecasting
-```
-
-### Production Setup
-1. Configure production settings in `deploy/`
-2. Set up monitoring and logging
-3. Configure data pipelines
-4. Deploy with orchestration tools (Kubernetes, etc.)
-
-## API Reference
-
-### Main Classes
-
-#### UnifiedCompleteTrainer
-Main training class with full feature support.
-
-```python
-trainer = UnifiedCompleteTrainer(config, rank, world_size)
-trainer.setup_distributed()
-trainer.setup_data_loaders()
-trainer.create_model()
-trainer.train()
-```
-
-#### OptimizedStreamingDataLoader
-Memory-efficient data loading for large datasets.
-
-```python
-loader = OptimizedStreamingDataLoader(
-    data_dir="data/raw",
-    memory_manager=manager,
-    max_workers=4
-)
-```
-
-#### FactorForecastingModel
-Main model architecture with TCN and attention.
-
-```python
-model = FactorForecastingModel(
-    input_dim=100,
-    hidden_dim=512,
-    num_layers=8,
-    num_heads=8
-)
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
-
-### Development Setup
-```bash
-# Install development dependencies
-pip install -r configs/requirements.txt
-
-# Install pre-commit hooks
-pre-commit install
-
-# Run tests before committing
-python -m pytest tests/
-```
-
-## License
-
-This project is licensed under the MIT License. See LICENSE file for details.
-
-## Support
-
-For questions and support:
-- Create an issue on GitHub
-- Check the documentation in `docs/`
-- Review the test examples in `tests/`
-
-## Changelog
-
-### Version 2.0.0
-- Complete system redesign with 8 core features
-- Distributed training support
-- Advanced model architectures
-- Comprehensive monitoring system
-- Production-ready deployment
-
-### Version 1.0.0
-- Initial release
-- Basic factor forecasting capabilities
-- Single-GPU training support
-
-## Acknowledgments
-
-- PyTorch team for the deep learning framework
-- Financial data providers
-- Open source community contributors
+## 许可证
+Private Repository - All Rights Reserved

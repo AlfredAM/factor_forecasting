@@ -75,7 +75,7 @@ class CorrelationLoss(nn.Module):
         # MSE loss
         mse_loss = 0.0
         for target_name in target_names:
-            if target_name in predictions and target_name in targets:
+            if target_name in predictions and (isinstance(targets, dict) and target_name in targets):
                 mse_loss += self.mse_loss(predictions[target_name], targets[target_name])
         
         # Correlation loss with target-specific optimization
@@ -83,7 +83,7 @@ class CorrelationLoss(nn.Module):
         rank_loss = 0.0
         
         for i, target_name in enumerate(target_names):
-            if target_name in predictions and target_name in targets:
+            if target_name in predictions and (isinstance(targets, dict) and target_name in targets):
                 pred = predictions[target_name]
                 target = targets[target_name]
                 

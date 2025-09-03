@@ -24,7 +24,7 @@ class StockEmbedding(nn.Module):
     def __init__(self, num_stocks: int, embedding_dim: int, dropout: float = 0.1):
         super(StockEmbedding, self).__init__()
         self.embedding = nn.Embedding(num_stocks, embedding_dim)
-        self.dropout = nn.Dropout(dropout)
+        self.dropout = nn.dropout(dropout)
         self.layer_norm = nn.LayerNorm(embedding_dim)
         
         # Initialize embeddings with improved initialization
@@ -88,7 +88,7 @@ class AdvancedFactorTCNAttention(nn.Module):
             self.input_projection = nn.Sequential(
                 nn.Linear(self.input_dim, self.hidden_dim),
                 nn.ReLU(),
-                nn.Dropout(self.dropout),
+                nn.dropout(self.dropout),
                 nn.LayerNorm(self.hidden_dim)
             )
         
@@ -118,7 +118,7 @@ class AdvancedFactorTCNAttention(nn.Module):
         self.feature_fusion = nn.Sequential(
             nn.Linear(self.hidden_dim * 2, self.hidden_dim),
             nn.ReLU(),
-            nn.Dropout(self.dropout),
+            nn.dropout(self.dropout),
             nn.LayerNorm(self.hidden_dim)
         )
         
@@ -127,7 +127,7 @@ class AdvancedFactorTCNAttention(nn.Module):
             target: nn.Sequential(
                 nn.Linear(self.hidden_dim, self.hidden_dim // 2),
                 nn.ReLU(),
-                nn.Dropout(self.dropout),
+                nn.dropout(self.dropout),
                 nn.Linear(self.hidden_dim // 2, 1)
             )
             for target in self.target_columns
@@ -295,7 +295,7 @@ class AdvancedFactorForecastingTCNAttentionModel(nn.Module):
         total_loss = 0.0
         
         for target_name in predictions.keys():
-            if target_name in targets:
+            if isinstance(targets, dict) and target_name in targets:
                 # MSE loss
                 mse_loss = F.mse_loss(predictions[target_name], targets[target_name])
                 
